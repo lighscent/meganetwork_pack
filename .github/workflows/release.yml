@@ -15,27 +15,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Metadata
+        id: meta
+        run: |
+          echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          echo "short=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
       - name: Zip pack
         run: |
           mkdir -p dist
-          zip -r dist/meganetwork_pack.zip pack.mcmeta assets -x '.git/*' '.github/*'
-          if [ -f pack.png ]; then zip -u dist/meganetwork_pack.zip pack.png; fi
-          unzip -l dist/meganetwork_pack.zip
+          zip -r dist/release.zip pack.mcmeta assets -x '.git/*' '.github/*'
+          if [ -f pack.png ]; then zip -u dist/release.zip pack.png; fi
+          unzip -l dist/release.zip
 
       - name: Checksum
         id: sha
         run: |
-          sha1sum dist/meganetwork_pack.zip
-          echo "value=$(sha1sum dist/meganetwork_pack.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          sha1sum dist/release.zip
+          echo "value=$(sha1sum dist/release.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: pack-${{ github.run_number }}
-          name: Pack ${{ github.run_number }} - ${{ github.sha }}
+          name: MegaNetwork pack - ${{ steps.meta.outputs.date }} (${{ steps.meta.outputs.short }})
           body: |
             Commit: `${{ github.sha }}`
             Branch: `${{ github.ref_name }}`
+            Minecraft 26.3 - pack format 97.1
 
             `resource-pack-sha1=${{ steps.sha.outputs.value }}`
-          files: dist/meganetwork_pack.zip
+          files: dist/release.zip
