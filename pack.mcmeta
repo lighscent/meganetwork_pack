@@ -1,12 +1,7 @@
 {
   "pack": {
-    "pack_format": 16,
-    "description": "\n§dplay.meganetwork.space",
-    "supported_formats": {
-      "min_inclusive": 16,
-      "max_inclusive": 999
-	},
-    "min_format": [16, 0],
-    "max_format": [999, 0]
+    "description": "MegaNetwork MMO items",
+    "min_format": [97, 1],
+    "max_format": 97
   }
 }
