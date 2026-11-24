@@ -1,0 +1,41 @@
+name: Build pack
+
+on:
+  push:
+    branches: [dev, main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Zip pack
+        run: |
+          mkdir -p dist
+          zip -r dist/meganetwork_pack.zip pack.mcmeta assets -x '.git/*' '.github/*'
+          if [ -f pack.png ]; then zip -u dist/meganetwork_pack.zip pack.png; fi
+          unzip -l dist/meganetwork_pack.zip
+
+      - name: Checksum
+        id: sha
+        run: |
+          sha1sum dist/meganetwork_pack.zip
+          echo "value=$(sha1sum dist/meganetwork_pack.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: pack-${{ github.run_number }}
+          name: Pack ${{ github.run_number }} - ${{ github.sha }}
+          body: |
+            Commit: `${{ github.sha }}`
+            Branch: `${{ github.ref_name }}`
+
+            `resource-pack-sha1=${{ steps.sha.outputs.value }}`
+          files: dist/meganetwork_pack.zip
