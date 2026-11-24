@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "MegaNetwork MMO items",
+    "description": "MegaNetwork MMO items\n§dplay.meganetwork.space",
     "min_format": [97, 1],
     "max_format": 97
   }
