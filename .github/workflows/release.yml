@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
 
+env:
+  PACK_NAME: "§5§lMegaNetwork §r§8| §6MMO §aSaison 2.zip"
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -24,15 +27,15 @@ jobs:
       - name: Zip pack
         run: |
           mkdir -p dist
-          zip -r dist/release.zip pack.mcmeta assets -x '.git/*' '.github/*'
-          if [ -f pack.png ]; then zip -u dist/release.zip pack.png; fi
-          unzip -l dist/release.zip
+          zip -r "dist/$PACK_NAME" pack.mcmeta assets -x '.git/*' '.github/*'
+          if [ -f pack.png ]; then zip -u "dist/$PACK_NAME" pack.png; fi
+          unzip -l "dist/$PACK_NAME"
 
       - name: Checksum
         id: sha
         run: |
-          sha1sum dist/release.zip
-          echo "value=$(sha1sum dist/release.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          sha1sum "dist/$PACK_NAME"
+          echo "value=$(sha1sum "dist/$PACK_NAME" | cut -c1-40)" >> "$GITHUB_OUTPUT"
 
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -45,4 +48,4 @@ jobs:
             Minecraft 26.3 - pack format 97.1
 
             `resource-pack-sha1=${{ steps.sha.outputs.value }}`
-          files: dist/release.zip
+          files: dist/${{ env.PACK_NAME }}
